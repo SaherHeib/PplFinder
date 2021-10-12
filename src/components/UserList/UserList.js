@@ -6,8 +6,9 @@ import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 import { useDispatch, useSelector } from "react-redux";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { addFilter, removeFilter, addFavorite, removeFavorite } from "../../redux";
-const UserList = ({ users, isLoading }) => {
+const UserList = ({ users, isLoading, pageNumber, setPage, hasMore }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
   const filterList = useSelector((state) => state.filt.filterList);
   const fvrtUsrs = useSelector((state) => state.fav.fvrtUsrs);
@@ -34,49 +35,83 @@ const UserList = ({ users, isLoading }) => {
     return fvrtUsrs.some((fvUsr) => fvUsr.login.uuid === uuid);
   };
   const isCountrieChecked = (val) => {
-    console.log(val);
     return filterList.includes(val) ? true : false;
+  };
+  const fetchMoreData = () => {
+    setPage(pageNumber + 1);
   };
   return (
     <S.UserList>
       <S.Filters>
-        <CheckBox onChange={handleChecBxChange} value="BR" label="Brazil" />
-        <CheckBox onChange={handleChecBxChange} value="AU" label="Australia" />
-        <CheckBox onChange={handleChecBxChange} value="CA" label="Canada" />
-        <CheckBox onChange={handleChecBxChange} value="DE" label="Germany" />
-        <CheckBox onChange={handleChecBxChange} value="FR" label="France" />
+        <CheckBox
+          onChange={handleChecBxChange}
+          isChecked={filterList.includes("BR")}
+          value="BR"
+          label="Brazil"
+        />
+        <CheckBox
+          onChange={handleChecBxChange}
+          isChecked={filterList.includes("AU")}
+          value="AU"
+          label="Australia"
+        />
+        <CheckBox
+          onChange={handleChecBxChange}
+          isChecked={filterList.includes("CA")}
+          value="CA"
+          label="Canada"
+        />
+        <CheckBox
+          onChange={handleChecBxChange}
+          isChecked={filterList.includes("DE")}
+          value="DE"
+          label="Germany"
+        />
+        <CheckBox
+          onChange={handleChecBxChange}
+          isChecked={filterList.includes("FR")}
+          value="FR"
+          label="France"
+        />
       </S.Filters>
-      <S.List>
-        {users.map((user, index) => {
-          return (
-            <S.User
-              key={index}
-              onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
-            >
-              <S.UserPicture src={user?.picture.large} alt="" />
-              <S.UserInfo>
-                <Text size="22px" bold>
-                  {user?.name.title} {user?.name.first} {user?.name.last}
-                </Text>
-                <Text size="14px">{user?.email}</Text>
-                <Text size="14px">
-                  {user?.location.street.number} {user?.location.street.name}
-                </Text>
-                <Text size="14px">
-                  {user?.location.city} {user?.location.country}
-                </Text>
-              </S.UserInfo>
-              <S.IconButtonWrapper
-                isVisible={index === hoveredUserId || isFavUsr(user.login.uuid)}
+      <S.List id="scrollDIV">
+        <InfiniteScroll
+          dataLength={users.length}
+          next={() => fetchMoreData()}
+          hasMore={hasMore}
+          scrollableTarget={"scrollDIV"}
+        >
+          {users.map((user, index) => {
+            return (
+              <S.User
+                key={index}
+                onMouseEnter={() => handleMouseEnter(index)}
+                onMouseLeave={handleMouseLeave}
               >
-                <IconButton onClick={() => handleFavClick(user)}>
-                  <FavoriteIcon color="error" />
-                </IconButton>
-              </S.IconButtonWrapper>
-            </S.User>
-          );
-        })}
+                <S.UserPicture src={user?.picture.large} alt="" />
+                <S.UserInfo>
+                  <Text size="22px" bold>
+                    {user?.name.title} {user?.name.first} {user?.name.last}
+                  </Text>
+                  <Text size="14px">{user?.email}</Text>
+                  <Text size="14px">
+                    {user?.location.street.number} {user?.location.street.name}
+                  </Text>
+                  <Text size="14px">
+                    {user?.location.city} {user?.location.country}
+                  </Text>
+                </S.UserInfo>
+                <S.IconButtonWrapper
+                  isVisible={index === hoveredUserId || isFavUsr(user.login.uuid)}
+                >
+                  <IconButton onClick={() => handleFavClick(user)}>
+                    <FavoriteIcon color="error" />
+                  </IconButton>
+                </S.IconButtonWrapper>
+              </S.User>
+            );
+          })}
+        </InfiniteScroll>
         {isLoading && (
           <S.SpinnerWrapper>
             <Spinner color="primary" size="45px" thickness={6} variant="indeterminate" />
