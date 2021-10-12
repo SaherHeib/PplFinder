@@ -6,10 +6,11 @@ import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 import { useDispatch, useSelector } from "react-redux";
-import { addFilter, removeFilter } from "../../redux";
+import { addFilter, removeFilter, addFavorite, removeFavorite } from "../../redux";
 const UserList = ({ users, isLoading }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
   const filterList = useSelector((state) => state.filt.filterList);
+  const fvrtUsrs = useSelector((state) => state.fav.fvrtUsrs);
   const dispatch = useDispatch();
 
   const handleMouseEnter = (index) => {
@@ -21,10 +22,20 @@ const UserList = ({ users, isLoading }) => {
   };
 
   const handleChecBxChange = (eventVal) => {
-    console.log(filterList.length);
-    console.log(filterList[eventVal]);
-    if (filterList.includes(eventVal)) dispatch(removeFilter(eventVal));
+    if (isCountrieChecked(eventVal)) dispatch(removeFilter(eventVal));
     else dispatch(addFilter(eventVal));
+  };
+  const handleFavClick = (user) => {
+    const useruuid = user.login.uuid;
+    if (isFavUsr(useruuid)) dispatch(removeFavorite(user.login.uuid));
+    else dispatch(addFavorite(user));
+  };
+  const isFavUsr = (uuid) => {
+    return fvrtUsrs.some((fvUsr) => fvUsr.login.uuid === uuid);
+  };
+  const isCountrieChecked = (val) => {
+    console.log(val);
+    return filterList.includes(val) ? true : false;
   };
   return (
     <S.UserList>
@@ -56,8 +67,10 @@ const UserList = ({ users, isLoading }) => {
                   {user?.location.city} {user?.location.country}
                 </Text>
               </S.UserInfo>
-              <S.IconButtonWrapper isVisible={index === hoveredUserId}>
-                <IconButton>
+              <S.IconButtonWrapper
+                isVisible={index === hoveredUserId || isFavUsr(user.login.uuid)}
+              >
+                <IconButton onClick={() => handleFavClick(user)}>
                   <FavoriteIcon color="error" />
                 </IconButton>
               </S.IconButtonWrapper>
