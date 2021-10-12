@@ -1,11 +1,17 @@
-import React from "react";
+import { React, useEffect } from "react";
 import Text from "components/Text";
 import UserList from "components/UserList";
 import { usePeopleFetch } from "hooks";
+import { useSelector } from "react-redux";
 import * as S from "./style";
 
 const Home = () => {
-  const { users, isLoading, pageNumber, hasMore, setPage } = usePeopleFetch();
+  const { users, isLoading, pageNumber, hasMore, setPage, fetchUsers } = usePeopleFetch();
+  const countrieLst = useSelector((state) => state.filt.countrieLst);
+
+  useEffect(() => {
+    fetchUsers(true);
+  }, [countrieLst]);
 
   return (
     <S.Home>

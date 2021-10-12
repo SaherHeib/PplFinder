@@ -5,23 +5,20 @@ export const usePeopleFetch = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, sethasMore] = useState(true);
-  const filterList = useSelector((state) => state.filt.filterList);
   const [pageNumber, setPage] = useState(1);
+  const countrieLst = useSelector((state) => state.filt.countrieLst);
 
   useEffect(() => {
     fetchUsers();
   }, [pageNumber]);
 
-  useEffect(() => {
-    fetchUsers(true);
-  }, [filterList]);
-
   async function fetchUsers(filter) {
     setIsLoading(true);
-    let nat = filterList ? "&nat=" + filterList.join(",") : "";
+    let nat = countrieLst ? "&nat=" + countrieLst.join(",") : "";
     const response = await axios.get(
       `https://randomuser.me/api/?${nat}&results=15&page=${pageNumber}`
     );
+
     setIsLoading(false);
     setUsers(filter ? [...response.data.results] : [...users, ...response.data.results]);
     sethasMore(response.data.results.length > 0);

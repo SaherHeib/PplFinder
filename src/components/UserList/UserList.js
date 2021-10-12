@@ -4,15 +4,34 @@ import Spinner from "components/Spinner";
 import CheckBox from "components/CheckBox";
 import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-import * as S from "./style";
 import { useDispatch, useSelector } from "react-redux";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { addFilter, removeFilter, addFavorite, removeFavorite } from "../../redux";
-const UserList = ({ users, isLoading, pageNumber, setPage, hasMore }) => {
+import * as S from "./style";
+
+const UserList = ({ users, isLoading, pageNumber, setPage, hasMore, isFav = false }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
-  const filterList = useSelector((state) => state.filt.filterList);
+  const [filterFvrt, setfilterFvrt] = useState([]);
+  const [filterUsrs, setfilterUsrs] = useState([]);
+  const countrieLst = useSelector((state) => state.filt.countrieLst);
   const fvrtUsrs = useSelector((state) => state.fav.fvrtUsrs);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setfilterFvrt(
+      countrieLst.length > 0
+        ? fvrtUsrs.filter((user) => countrieLst.includes(user.nat))
+        : fvrtUsrs
+    );
+  }, [countrieLst, fvrtUsrs]);
+
+  useEffect(() => {
+    setfilterUsrs(
+      countrieLst.length > 0
+        ? users.filter((user) => countrieLst.includes(user.nat))
+        : users
+    );
+  }, [countrieLst, users]);
 
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
@@ -26,17 +45,21 @@ const UserList = ({ users, isLoading, pageNumber, setPage, hasMore }) => {
     if (isCountrieChecked(eventVal)) dispatch(removeFilter(eventVal));
     else dispatch(addFilter(eventVal));
   };
+
   const handleFavClick = (user) => {
     const useruuid = user.login.uuid;
     if (isFavUsr(useruuid)) dispatch(removeFavorite(user.login.uuid));
     else dispatch(addFavorite(user));
   };
+
   const isFavUsr = (uuid) => {
     return fvrtUsrs.some((fvUsr) => fvUsr.login.uuid === uuid);
   };
+
   const isCountrieChecked = (val) => {
-    return filterList.includes(val) ? true : false;
+    return countrieLst.includes(val) ? true : false;
   };
+
   const fetchMoreData = () => {
     setPage(pageNumber + 1);
   };
@@ -45,43 +68,43 @@ const UserList = ({ users, isLoading, pageNumber, setPage, hasMore }) => {
       <S.Filters>
         <CheckBox
           onChange={handleChecBxChange}
-          isChecked={filterList.includes("BR")}
+          isChecked={countrieLst.includes("BR")}
           value="BR"
           label="Brazil"
         />
         <CheckBox
           onChange={handleChecBxChange}
-          isChecked={filterList.includes("AU")}
+          isChecked={countrieLst.includes("AU")}
           value="AU"
           label="Australia"
         />
         <CheckBox
           onChange={handleChecBxChange}
-          isChecked={filterList.includes("CA")}
+          isChecked={countrieLst.includes("CA")}
           value="CA"
           label="Canada"
         />
         <CheckBox
           onChange={handleChecBxChange}
-          isChecked={filterList.includes("DE")}
+          isChecked={countrieLst.includes("DE")}
           value="DE"
           label="Germany"
         />
         <CheckBox
           onChange={handleChecBxChange}
-          isChecked={filterList.includes("FR")}
+          isChecked={countrieLst.includes("FR")}
           value="FR"
           label="France"
         />
       </S.Filters>
       <S.List id="scrollDIV">
         <InfiniteScroll
-          dataLength={users.length}
+          dataLength={filterUsrs.length}
           next={() => fetchMoreData()}
           hasMore={hasMore}
           scrollableTarget={"scrollDIV"}
         >
-          {users.map((user, index) => {
+          {(isFav ? filterFvrt : filterUsrs)?.map((user, index) => {
             return (
               <S.User
                 key={index}
