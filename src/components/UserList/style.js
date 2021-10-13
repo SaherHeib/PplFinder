@@ -16,6 +16,7 @@ export const List = styled.div`
 `;
 
 export const User = styled.div`
+  margin-bottom: 25px;
   display: flex;
   justify-content: center;
   gap: 16px;

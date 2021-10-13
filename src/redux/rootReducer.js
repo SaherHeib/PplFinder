@@ -9,8 +9,10 @@ const persisConfig = {
   storage,
   whitelist: ["fav"],
 };
+
 const rootReducer = combineReducers({
   filt: filterReducer,
   fav: favoriteReducer,
 });
+
 export default persistReducer(persisConfig, rootReducer);

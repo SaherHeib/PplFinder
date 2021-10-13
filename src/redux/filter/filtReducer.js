@@ -1,18 +1,17 @@
 import { ADD_FILTER, REMOVE_FILTER } from "./filtRTypes";
 const initialState = {
-  filterList: [],
+  countrieLst: [],
 };
 
 const filterReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_FILTER:
-      console.log(action.payload);
       return {
-        filterList: [...state.filterList, action.payload],
+        countrieLst: [...state.countrieLst, action.payload],
       };
     case REMOVE_FILTER:
       return {
-        filterList: state.filterList.filter((e) => e !== action.payload),
+        countrieLst: state.countrieLst.filter((e) => e !== action.payload),
       };
     default:
       return state;

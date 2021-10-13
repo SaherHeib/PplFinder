@@ -19,7 +19,7 @@ const NavBar = () => {
         indicatorColor="primary"
         textColor="primary"
       >
-        <Tab label="Home" index={0} component={Link} to="/home" />
+        <Tab label="Home" index={0} component={Link} to="/" />
         <Tab label="Favorites" index={1} component={Link} to="/favorites" />
       </Tabs>
     </AppBar>
