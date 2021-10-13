@@ -6,7 +6,6 @@ const initialState = {
 const filterReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_FILTER:
-      console.log(action.payload);
       return {
         countrieLst: [...state.countrieLst, action.payload],
       };

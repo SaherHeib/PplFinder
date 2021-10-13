@@ -18,20 +18,20 @@ const UserList = ({ users, isLoading, pageNumber, setPage, hasMore, isFav = fals
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setfilterFvrt(
-      countrieLst.length > 0
-        ? fvrtUsrs.filter((user) => countrieLst.includes(user.nat))
-        : fvrtUsrs
-    );
-  }, [countrieLst, fvrtUsrs]);
-
-  useEffect(() => {
     setfilterUsrs(
       countrieLst.length > 0
         ? users.filter((user) => countrieLst.includes(user.nat))
         : users
     );
   }, [countrieLst, users]);
+
+  useEffect(() => {
+    setfilterFvrt(
+      countrieLst.length > 0
+        ? fvrtUsrs.filter((user) => countrieLst.includes(user.nat))
+        : fvrtUsrs
+    );
+  }, [countrieLst, fvrtUsrs]);
 
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
